@@ -1,3 +1,3 @@
 #!/usr/bin/python
 #FileName: helloworld.py
-print 'Hello Python!'
+print('Hello Python!')
