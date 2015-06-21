@@ -5,7 +5,7 @@ Copyright 2007, Michael Schrenk
    This software is designed for use with the book,                                                             
    "Webbots, Spiders, and Screen Scarpers", Michael Schrenk, 2007 No Starch Press, San Francisco CA             
                                                                                                                 
-W3C� SOFTWARE NOTICE AND LICENSE                                                                                
+W3C� SOFTWARE NOTICE AND LICENSE                                                                                
                                                                                                                 
 This work (and included software, documentation such as READMEs, or other                                       
 related items) is being provided by the copyright holders under the following license.                          
@@ -100,6 +100,49 @@ define("INCL_HEAD", TRUE);
 User interfaces         	                                            
 -------------------------------------------------------------			
 */
+
+function curl_redir_exec($ch,$debug="")
+{
+static $curl_loops = 0;
+static $curl_max_loops = 20;
+if ($curl_loops++ >= $curl_max_loops)
+{
+$curl_loops = 0;
+return FALSE;
+}
+curl_setopt($ch, CURLOPT_HEADER, true);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$data = curl_exec($ch);
+$debbbb = $data;
+list($header, $data) = explode("＼n＼n", $data, 2);
+$http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+if ($http_code == 301 || $http_code == 302) {
+$matches = array();
+preg_match('/Location:(.*?)＼n/', $header, $matches);
+$url = @parse_url(trim(array_pop($matches)));
+//print_r($url);
+if (!$url)
+{
+//couldn't process the url to redirect to
+$curl_loops = 0;
+return $data;
+}
+$last_url = parse_url(curl_getinfo($ch, CURLINFO_EFFECTIVE_URL));
+/*    if (!$url['scheme'])
+$url['scheme'] = $last_url['scheme'];
+if (!$url['host'])
+$url['host'] = $last_url['host'];
+if (!$url['path'])
+$url['path'] = $last_url['path'];*/
+$new_url = $url['scheme'] . '://' . $url['host'] . $url['path'] . ($url['query']?'?'.$url['query']:'');
+curl_setopt($ch, CURLOPT_URL, $new_url);
+//    debug('Redirecting to', $new_url);
+return curl_redir_exec($ch);
+} else {
+$curl_loops=0;
+return $debbbb;
+}
+}
 
 /***********************************************************************
 function http_get($target, $ref)                                        
@@ -298,7 +341,8 @@ function http($target, $ref, $method, $data_array, $incl_head)
 	curl_setopt($ch, CURLOPT_REFERER, $ref);            // Referer value
 	curl_setopt($ch, CURLOPT_VERBOSE, FALSE);           // Minimize logs
 	curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);    // No certificate
-	curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);     // Follow redirects
+	//curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);     // Follow redirects
+	curl_redir_exec($ch);
 	curl_setopt($ch, CURLOPT_MAXREDIRS, 4);             // Limit redirections to four
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);     // Return in string
     

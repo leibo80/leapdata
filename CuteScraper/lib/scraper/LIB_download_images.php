@@ -5,7 +5,7 @@ Copyright 2007, Michael Schrenk
    This software is designed for use with the book,                                                             
    "Webbots, Spiders, and Screen Scarpers", Michael Schrenk, 2007 No Starch Press, San Francisco CA             
                                                                                                                 
-W3C® SOFTWARE NOTICE AND LICENSE                                                                                
+W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                                                                
                                                                                                                 
 This work (and included software, documentation such as READMEs, or other                                       
 related items) is being provided by the copyright holders under the following license.                          
@@ -84,7 +84,8 @@ function download_binary_file($file, $ref)
     curl_setopt($s, CURLOPT_BINARYTRANSFER, 1);        // Indicate binary transfer
 	curl_setopt($s, CURLOPT_REFERER, $ref);            // Referer value
 	curl_setopt($s, CURLOPT_SSL_VERIFYPEER, FALSE);    // No certificate
-	curl_setopt($s, CURLOPT_FOLLOWLOCATION, TRUE);     // Follow redirects
+	//curl_setopt($s, CURLOPT_FOLLOWLOCATION, TRUE);     // Follow redirects
+	curl_redir_exec($s);
 	curl_setopt($s, CURLOPT_MAXREDIRS, 4);             // Limit redirections to four
     
     # Execute the CURL command (Send contents of target web page to string)

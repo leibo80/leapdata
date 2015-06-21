@@ -1,4 +1,5 @@
 <?php
+    
     $target = "http://www.WebbotsSpidersScreenScrapers.com/hello_world.html";
 	$file_handle = fopen($target, "r");
 	
@@ -8,4 +9,7 @@
 		echo fgets($file_handle, 4096);
 	}
 	fclose($file_handle);
+	
+	include(dirname(__FILE__) . "\config.php");
+	echo Root_Path . "\config.php";
 ?>

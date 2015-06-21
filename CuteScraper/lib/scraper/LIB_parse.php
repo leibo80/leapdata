@@ -5,7 +5,7 @@ Copyright 2007, Michael Schrenk
    This software is designed for use with the book,                                                             
    "Webbots, Spiders, and Screen Scarpers", Michael Schrenk, 2007 No Starch Press, San Francisco CA             
                                                                                                                 
-W3C® SOFTWARE NOTICE AND LICENSE                                                                                
+W3Cï¿½ SOFTWARE NOTICE AND LICENSE                                                                                
                                                                                                                 
 This work (and included software, documentation such as READMEs, or other                                       
 related items) is being provided by the copyright holders under the following license.                          
@@ -181,6 +181,19 @@ function get_attribute($tag, $attribute)
     
     # Use return_between() to find the properly quoted value for the attribute
     return return_between($cleaned_html, strtoupper($attribute)."=\"", "\"", EXCL);
+    }
+
+function my_get_attribute($tag, $attribute, $quotation_mark="\"")
+    {
+    # Use Tidy library to 'clean' input
+    $cleaned_html = tidy_html($tag);
+    
+    # Remove all line feeds from the string
+    $cleaned_html = str_replace("\r", "", $cleaned_html);   
+    $cleaned_html = str_replace("\n", "", $cleaned_html);
+    
+    # Use return_between() to find the properly quoted value for the attribute
+    return return_between($cleaned_html, strtoupper($attribute)."=".$quotation_mark, $quotation_mark, EXCL);
     }
 
 /***********************************************************************
